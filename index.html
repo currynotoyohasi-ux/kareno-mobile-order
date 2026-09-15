@@ -1,9 +1,10 @@
-<!DOCTYPE <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>カレーノとよはし｜モバイルオーダー</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -11,53 +12,79 @@ body{
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Yu Gothic",sans-serif;
   background:#fff8e7;
-  color:#222
+  color:#222;
 }
-.app{max-width:720px;margin:auto;padding-bottom:110px}
-
+.app{
+  max-width:720px;
+  margin:auto;
+  padding-bottom:110px;
+}
 header{
   background:linear-gradient(135deg,#ffc400,#ff9e00);
   border-bottom:4px solid #1a1a1a;
   padding:14px 16px;
   font-weight:900;
-  font-size:21px
+  font-size:21px;
 }
-
 .hero{
   margin:14px;
   background:#1a1a1a;
   color:#fff;
   border-radius:18px;
-  padding:18px
+  padding:18px;
 }
-.hero h1{margin:0 0 6px;font-size:23px}
-.hero p{margin:0;font-size:13px;line-height:1.6}
-
-.section{padding:0 14px}
-.section h2{font-size:19px;margin:16px 0 10px}
-
-.menu{display:grid;gap:10px}
-
+.hero h1{
+  margin:0 0 6px;
+  font-size:23px;
+}
+.hero p{
+  margin:0;
+  font-size:13px;
+  line-height:1.6;
+}
+.section{
+  padding:0 14px;
+}
+.section h2{
+  font-size:19px;
+  margin:16px 0 10px;
+}
+.menu{
+  display:grid;
+  gap:10px;
+}
 .card{
   background:#fff;
   border:1px solid #eadca7;
   border-radius:16px;
-  padding:14px
+  padding:14px;
 }
-
-.top{display:flex;justify-content:space-between;gap:12px}
-.name{font-weight:900;font-size:17px}
-.cat{font-size:11px;color:#777;margin-top:3px}
-.price{font-size:20px;font-weight:900;color:#cf6500}
-
+.top{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+}
+.name{
+  font-weight:900;
+  font-size:17px;
+}
+.cat{
+  font-size:11px;
+  color:#777;
+  margin-top:3px;
+}
+.price{
+  font-size:20px;
+  font-weight:900;
+  color:#cf6500;
+}
 .controls{
   display:flex;
   justify-content:flex-end;
   align-items:center;
   gap:9px;
-  margin-top:10px
+  margin-top:10px;
 }
-
 .controls button{
   width:38px;
   height:38px;
@@ -65,58 +92,115 @@ header{
   border:1px solid #ddd;
   background:#fff;
   font-size:22px;
-  font-weight:900
+  font-weight:900;
 }
-
 .qty{
   min-width:28px;
   text-align:center;
-  font-weight:900
+  font-weight:900;
 }
-
 .form{
   background:#fff;
   border-radius:16px;
-  padding:14px
+  padding:14px;
 }
-
-.field{margin-bottom:12px}
-
+.field{
+  margin-bottom:12px;
+}
 .field label{
   display:block;
   font-weight:900;
   font-size:13px;
-  margin-bottom:6px
+  margin-bottom:6px;
 }
-
 .field input{
   width:100%;
   padding:12px;
   border:2px solid #eadca7;
   border-radius:12px;
   font-size:16px;
-  box-sizing:border-box
+  box-sizing:border-box;
 }
-
 .paygrid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:8px
+  gap:8px;
 }
-
 .pay{
   padding:12px;
   border-radius:12px;
   border:2px solid #eadca7;
   background:#fff;
-  font-weight:900
+  font-weight:900;
 }
-
 .pay.on{
   border-color:#e57a00;
-  background:#fff2df
+  background:#fff2df;
 }
-
+.notice{
+  margin:14px;
+  background:#fff4c8;
+  border:1px solid #e6c45f;
+  border-radius:14px;
+  padding:11px;
+  font-size:12px;
+  line-height:1.5;
+}
+.result{
+  display:none;
+  margin:14px;
+  background:#fff;
+  border-radius:16px;
+  padding:20px;
+  text-align:center;
+}
+.result.show{
+  display:block;
+}
+.orderno{
+  display:inline-block;
+  background:#ffc400;
+  border:3px solid #222;
+  border-radius:14px;
+  padding:8px 13px;
+  font-size:27px;
+  font-weight:900;
+}
+.statusbox{
+  margin-top:18px;
+  padding:18px 12px;
+  border:2px solid #eadca7;
+  border-radius:16px;
+  background:#fff4c8;
+}
+.statusbox.cooking{
+  background:#fff0dc;
+}
+.statusbox.ready{
+  background:#e3f7e7;
+  border-color:#55a765;
+}
+.statusbox.done{
+  background:#eee;
+  border-color:#bbb;
+}
+.statusicon{
+  font-size:48px;
+}
+.statustitle{
+  margin-top:5px;
+  font-size:22px;
+  font-weight:900;
+}
+.statusmessage{
+  margin-top:7px;
+  font-size:14px;
+  line-height:1.6;
+}
+.err{
+  color:#b42318;
+  font-weight:900;
+}
 .cartbar{
   position:fixed;
   left:0;
@@ -124,21 +208,24 @@ header{
   bottom:0;
   background:#fff;
   border-top:1px solid #ddd;
-  padding:10px 14px
+  padding:10px 14px;
 }
-
 .inner{
   max-width:720px;
   margin:auto;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  gap:10px
+  gap:10px;
 }
-
-.total small{display:block;color:#777}
-.total strong{font-size:25px;color:#cf6500}
-
+.total small{
+  display:block;
+  color:#777;
+}
+.total strong{
+  font-size:25px;
+  color:#cf6500;
+}
 .orderbtn{
   border:0;
   background:#e57a00;
@@ -147,87 +234,10 @@ header{
   padding:14px 18px;
   font-weight:900;
   font-size:17px;
-  min-width:45%
+  min-width:45%;
 }
-
-.orderbtn:disabled{opacity:.45}
-
-.notice{
-  margin:14px;
-  background:#fff4c8;
-  border:1px solid #e6c45f;
-  border-radius:14px;
-  padding:11px;
-  font-size:12px;
-  line-height:1.5
-}
-
-.result{
-  display:none;
-  margin:14px;
-  background:#fff;
-  border-radius:16px;
-  padding:20px;
-  text-align:center
-}
-
-.result.show{display:block}
-
-.orderno{
-  display:inline-block;
-  background:#ffc400;
-  border:3px solid #222;
-  border-radius:14px;
-  padding:8px 13px;
-  font-size:27px;
-  font-weight:900
-}
-
-.statusbox{
-  margin-top:18px;
-  border-radius:16px;
-  padding:18px 12px;
-  background:#fff8e7;
-  border:2px solid #eadca7
-}
-
-.statusicon{
-  font-size:48px;
-  margin-bottom:6px
-}
-
-.statustitle{
-  font-size:22px;
-  font-weight:900
-}
-
-.statusmessage{
-  margin-top:7px;
-  font-size:14px;
-  line-height:1.6
-}
-
-.statusbox.new{
-  background:#fff4c8
-}
-
-.statusbox.cooking{
-  background:#fff0dc
-}
-
-.statusbox.ready{
-  background:#e3f7e7;
-  border-color:#55a765
-}
-
-.statusbox.done{
-  background:#eee;
-  border-color:#bbb
-}
-
-.err{
-  color:#b42318;
-  font-weight:900
+.orderbtn:disabled{
+  opacity:.45;
 }
 </style>
 </head>
@@ -304,7 +314,6 @@ header{
 </div>
 
 <script>
-
 const SUPABASE_URL =
 "https://xvpxioozkgmyrkhrfpdv.supabase.co";
 
@@ -322,7 +331,6 @@ let statusTimer=null;
 const yen=n=>"¥"+Number(n).toLocaleString("ja-JP");
 
 function setDefaultPickup(){
-
   const d=new Date();
 
   d.setMinutes(d.getMinutes()+30);
@@ -332,119 +340,96 @@ function setDefaultPickup(){
 
   document.getElementById("pickup").value=
   `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
-
 }
 
 setDefaultPickup();
 
 function total(){
-
   return products.reduce(
-    (s,p)=>s+(cart[p.id]||0)*p.price,
+    (sum,p)=>sum+(cart[p.id]||0)*p.price,
     0
   );
-
 }
 
 function refresh(){
-
-  document.getElementById("total").textContent=
-  yen(total());
+  document.getElementById("total").textContent=yen(total());
 
   document.getElementById("orderBtn").disabled=
   Object.keys(cart).length===0;
-
 }
 
 function changeQty(id,delta){
-
   cart[id]=(cart[id]||0)+delta;
 
-  if(cart[id]<=0)
+  if(cart[id]<=0){
     delete cart[id];
+  }
 
   document.getElementById("q"+id).textContent=
   cart[id]||0;
 
   refresh();
-
 }
 
 async function loadProducts(){
-
   const menu=document.getElementById("menu");
 
   const {data,error}=await client
-  .from("products")
-  .select("id,name,price,category,is_available,sort_order")
-  .eq("is_available",true)
-  .order("sort_order",{ascending:true});
+    .from("products")
+    .select("id,name,price,category,is_available,sort_order")
+    .eq("is_available",true)
+    .order("sort_order",{ascending:true});
 
   if(error){
-
     menu.innerHTML=
     '<div class="notice err">商品取得エラー：'+
     error.message+
     '</div>';
 
     return;
-
   }
 
   products=data||[];
   menu.innerHTML="";
 
   products.forEach(p=>{
-
     const d=document.createElement("div");
 
     d.className="card";
 
     d.innerHTML=`
-    <div class="top">
+      <div class="top">
+        <div>
+          <div class="name">${p.name}</div>
+          <div class="cat">${p.category||""}</div>
+        </div>
 
-      <div>
-        <div class="name">${p.name}</div>
-        <div class="cat">${p.category||""}</div>
+        <div class="price">${yen(p.price)}</div>
       </div>
 
-      <div class="price">${yen(p.price)}</div>
-
-    </div>
-
-    <div class="controls">
-
-      <button onclick="changeQty(${p.id},-1)">−</button>
-
-      <div class="qty" id="q${p.id}">
-      0
+      <div class="controls">
+        <button onclick="changeQty(${p.id},-1)">−</button>
+        <div class="qty" id="q${p.id}">0</div>
+        <button onclick="changeQty(${p.id},1)">＋</button>
       </div>
-
-      <button onclick="changeQty(${p.id},1)">＋</button>
-
-    </div>
     `;
 
     menu.appendChild(d);
-
   });
-
 }
 
-document.querySelectorAll(".pay")
-.forEach(b=>b.onclick=()=>{
+document.querySelectorAll(".pay").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll(".pay").forEach(x=>{
+      x.classList.remove("on");
+    });
 
-  document.querySelectorAll(".pay")
-  .forEach(x=>x.classList.remove("on"));
-
-  b.classList.add("on");
-
-  paymentMethod=b.dataset.pay;
-
+    b.classList.add("on");
+    paymentMethod=b.dataset.pay;
+  };
 });
 
 function statusInfo(status){
-
   switch(status){
 
     case "cooking":
@@ -456,38 +441,35 @@ function statusInfo(status){
 
     case "ready":
       return {
-        icon:"✅",
+        icon:"🟢",
         title:"できました！",
-        message:"商品ができあがりました。受取口までお越しください。"
+        message:"商品ができあがりました。受取口までお越しください！"
       };
 
     case "done":
       return {
         icon:"🙏",
         title:"お渡し完了",
-        message:"ご利用ありがとうございました！またのご注文をお待ちしております。"
+        message:"ご利用ありがとうございました！"
       };
 
     default:
       return {
         icon:"🟡",
         title:"注文を受け付けました",
-        message:"ご注文を確認しています。調理開始までそのままお待ちください。"
+        message:"ご注文を確認しています。そのままお待ちください。"
       };
-
   }
-
 }
 
 function renderOrder(orderNumber,totalAmount,status){
-
   const info=statusInfo(status);
   const result=document.getElementById("result");
 
   result.className="result show";
 
   result.innerHTML=`
-    <div style="font-size:54px">✅</div>
+    <div style="font-size:54px">${info.icon}</div>
 
     <h2>ご注文ありがとうございます</h2>
 
@@ -498,8 +480,7 @@ function renderOrder(orderNumber,totalAmount,status){
     </div>
 
     <p>
-      合計
-      <b>${yen(totalAmount)}</b>
+      合計 <b>${yen(totalAmount)}</b>
     </p>
 
     <div class="statusbox ${status||"new"}">
@@ -518,100 +499,91 @@ function renderOrder(orderNumber,totalAmount,status){
 
     </div>
   `;
-
 }
 
-async function checkOrderStatus(orderId,orderNumber,totalAmount){
-
+async function checkOrderStatus(
+  orderNumber,
+  totalAmount
+){
   const {data,error}=await client.rpc(
     "get_order_status",
     {
-      p_order_id:orderId
+      p_order_number:orderNumber
     }
   );
 
   if(error){
-    console.error("status error",error);
+    console.error("注文状況取得エラー",error);
     return;
   }
 
-  if(!data)
+  if(!data){
     return;
+  }
 
   renderOrder(
-    orderNumber,
+    data.order_number,
     totalAmount,
     data.status
   );
 
   if(data.status==="done" && statusTimer){
-
     clearInterval(statusTimer);
     statusTimer=null;
-
   }
-
 }
 
-function startStatusWatch(orderId,orderNumber,totalAmount){
-
-  if(statusTimer)
+function startStatusWatch(
+  orderNumber,
+  totalAmount
+){
+  if(statusTimer){
     clearInterval(statusTimer);
+  }
 
   checkOrderStatus(
-    orderId,
     orderNumber,
     totalAmount
   );
 
   statusTimer=setInterval(()=>{
-
     checkOrderStatus(
-      orderId,
       orderNumber,
       totalAmount
     );
-
   },5000);
-
 }
 
 document.getElementById("orderBtn").onclick=async()=>{
-
   const name=
-  document.getElementById("customerName").value.trim();
+    document.getElementById("customerName").value.trim();
 
   const pickup=
-  document.getElementById("pickup").value;
+    document.getElementById("pickup").value;
 
   const result=
-  document.getElementById("result");
+    document.getElementById("result");
 
   if(!name){
-
     alert("お名前を入力してください");
     return;
-
   }
 
   if(!pickup){
-
     alert("受取時間を選択してください");
     return;
-
   }
 
   const items=
-  Object.entries(cart)
-  .map(([product_id,quantity])=>({
-
-    product_id:Number(product_id),
-    quantity:Number(quantity)
-
-  }));
+    Object.entries(cart).map(
+      ([product_id,quantity])=>({
+        product_id:Number(product_id),
+        quantity:Number(quantity)
+      })
+    );
 
   const btn=
-  document.getElementById("orderBtn");
+    document.getElementById("orderBtn");
 
   btn.disabled=true;
   btn.textContent="送信中...";
@@ -619,35 +591,26 @@ document.getElementById("orderBtn").onclick=async()=>{
   const {data,error}=await client.rpc(
     "submit_order",
     {
-
       p_customer_name:name,
-
-      p_pickup_time:
-      new Date(pickup).toISOString(),
-
-      p_payment_method:
-      paymentMethod,
-
+      p_pickup_time:new Date(pickup).toISOString(),
+      p_payment_method:paymentMethod,
       p_items:items
-
     }
   );
 
   btn.textContent="注文を確定";
 
   if(error){
-
     btn.disabled=false;
 
     result.className="result show";
 
     result.innerHTML=
-    '<div class="err">注文エラー</div><p>'+
-    error.message+
-    '</p>';
+      '<div class="err">注文エラー</div><p>'+
+      error.message+
+      '</p>';
 
     return;
-
   }
 
   renderOrder(
@@ -657,7 +620,6 @@ document.getElementById("orderBtn").onclick=async()=>{
   );
 
   startStatusWatch(
-    data.order_id,
     data.order_number,
     data.total_amount
   );
@@ -665,13 +627,11 @@ document.getElementById("orderBtn").onclick=async()=>{
   cart={};
 
   products.forEach(p=>{
+    const e=document.getElementById("q"+p.id);
 
-    const e=
-    document.getElementById("q"+p.id);
-
-    if(e)
+    if(e){
       e.textContent="0";
-
+    }
   });
 
   refresh();
@@ -679,11 +639,9 @@ document.getElementById("orderBtn").onclick=async()=>{
   result.scrollIntoView({
     behavior:"smooth"
   });
-
 };
 
 loadProducts();
-
 </script>
 
 </body>
