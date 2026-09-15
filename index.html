@@ -644,5 +644,89 @@ document.getElementById("orderBtn").onclick=async()=>{
 loadProducts();
 </script>
 
+<div style="margin:24px 16px;padding:20px;background:#fff;border-radius:16px;border:2px solid #222;">
+  <h2 style="margin-top:0;">🔎 注文状況を確認</h2>
+  <p>注文番号を入力してください</p>
+
+  <input
+    id="lookupOrderNumber"
+    type="text"
+    placeholder="例：C-1009"
+    autocomplete="off"
+    style="width:100%;box-sizing:border-box;padding:14px;font-size:18px;border:1px solid #aaa;border-radius:10px;"
+  >
+
+  <button
+    id="lookupOrderButton"
+    type="button"
+    style="width:100%;margin-top:12px;padding:14px;font-size:18px;font-weight:bold;border:0;border-radius:10px;background:#f4c430;color:#111;"
+  >
+    注文状況を確認する
+  </button>
+
+  <div id="lookupOrderResult" style="margin-top:16px;"></div>
+</div>
+
+<script>
+document.getElementById("lookupOrderButton").addEventListener("click", async () => {
+  const input = document.getElementById("lookupOrderNumber");
+  const result = document.getElementById("lookupOrderResult");
+  const orderNumber = input.value.trim().toUpperCase();
+
+  if (!orderNumber) {
+    result.innerHTML = "<b>注文番号を入力してください。</b>";
+    return;
+  }
+
+  result.innerHTML = "検索中...";
+
+  const { data, error } = await supabase.rpc("get_order_status", {
+    p_order_number: orderNumber
+  });
+
+  if (error) {
+    console.error(error);
+    result.innerHTML = "<b>注文情報を取得できませんでした。</b>";
+    return;
+  }
+
+  if (!data) {
+    result.innerHTML = "<b>その注文番号は見つかりませんでした。</b>";
+    return;
+  }
+
+  const statusText = {
+    new: "注文を受け付けました",
+    cooking: "調理中です",
+    ready: "できました！",
+    done: "お渡し完了"
+  }[data.status] || data.status;
+
+  const items = (data.items || []).map(item =>
+    `<div>${item.product_name} × ${item.quantity}　¥${Number(item.subtotal).toLocaleString()}</div>`
+  ).join("");
+
+  const pickup = data.pickup_time
+    ? new Date(data.pickup_time).toLocaleString("ja-JP", {
+        month: "numeric",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      })
+    : "-";
+
+  result.innerHTML = `
+    <div style="padding:16px;background:#fff8dc;border-radius:12px;">
+      <div style="font-size:22px;font-weight:bold;">${data.order_number}</div>
+      <div style="margin-top:10px;"><b>現在の状況：</b>${statusText}</div>
+      <div style="margin-top:10px;"><b>受取予定：</b>${pickup}</div>
+      <div style="margin-top:10px;">${items}</div>
+      <div style="margin-top:10px;font-size:20px;font-weight:bold;">
+        合計 ¥${Number(data.total_amount).toLocaleString()}
+      </div>
+    </div>
+  `;
+});
+</script>
 </body>
 </html>
