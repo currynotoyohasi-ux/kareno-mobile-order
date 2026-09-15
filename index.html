@@ -680,7 +680,7 @@ document.getElementById("lookupOrderButton").addEventListener("click", async () 
 
   result.innerHTML = "検索中...";
 
-  const { data, error } = await supabase.rpc("get_order_status", {
+  const { data, error } = await supabase.rpc("lookup_order", {
     p_order_number: orderNumber
   });
 
