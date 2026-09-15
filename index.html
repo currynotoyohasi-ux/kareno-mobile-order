@@ -671,8 +671,7 @@ loadProducts();
 document.getElementById("lookupOrderButton").addEventListener("click", async () => {
   const input = document.getElementById("lookupOrderNumber");
   const result = document.getElementById("lookupOrderResult");
-  const orderNumber = input.value.trim().toUpperCase();
-
+　const orderNumber = "C-" + input.value.trim().replace(/^C-/i, "");
   if (!orderNumber) {
     result.innerHTML = "<b>注文番号を入力してください。</b>";
     return;
