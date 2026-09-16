@@ -290,7 +290,29 @@ const statusName = {
 };
 
 let currentTab = "cooking";
+document.getElementById("tabCooking").onclick = () => {
+  currentTab = "cooking";
 
+  document.getElementById("tabCooking")
+    .classList.add("active");
+
+  document.getElementById("tabReady")
+    .classList.remove("active");
+
+  loadOrders();
+};
+
+document.getElementById("tabReady").onclick = () => {
+  currentTab = "ready";
+
+  document.getElementById("tabReady")
+    .classList.add("active");
+
+  document.getElementById("tabCooking")
+    .classList.remove("active");
+
+  loadOrders();
+};
 
 
 function yen(n){
