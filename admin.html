@@ -675,27 +675,54 @@ document.getElementById("downloadCsvBtn").onclick = async () => {
   alert("商品を削除しました");
   loadProducts();
 }
+  
   document.getElementById("addProductBtn").onclick = async () => {
+
+  const name = prompt("商品名を入力してください");
+
+  if(!name || !name.trim()){
+    return;
+  }
+
+  const priceText = prompt("金額を入力してください");
+
+  if(priceText === null){
+    return;
+  }
+
+  const price = Number(priceText);
+
+  if(!Number.isFinite(price) || price < 0){
+    alert("金額を正しく入力してください");
+    return;
+  }
+
+  const btn = document.getElementById("addProductBtn");
+  btn.disabled = true;
+  btn.textContent = "追加中...";
 
   const { error } =
     await client
       .from("products")
       .insert({
-        name:"新しい商品",
-        price:0,
+        name:name.trim(),
+        price:price,
         category:"",
         is_available:true,
         sort_order:999
       });
+
+  btn.disabled = false;
+  btn.textContent = "＋ 商品を追加";
 
   if(error){
     alert("商品を追加できませんでした：" + error.message);
     return;
   }
 
+  alert("商品を追加しました！");
   loadProducts();
 };
-
 
 function yen(n){
   return "¥" + Number(n || 0).toLocaleString("ja-JP");
