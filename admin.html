@@ -209,14 +209,38 @@ button{
 .status-tab.active{
   background:#ffc400;
 }
+  .header-brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.header-brand img{
+  width:64px;
+  height:64px;
+  object-fit:contain;
+  border-radius:12px;
+  background:white;
+  padding:4px;
+}
+
+.header-text{
+  display:flex;
+  flex-direction:column;
+}
 </style>
 </head>
 
 <body>
 
 <header>
-  <h1>🦌 カレーノとよはし</h1>
-  <small>ORDER MANAGEMENT</small>
+  <div class="header-brand">
+    <img src="992418E9-F1D5-4D18-BB8E-DCB3D3DAEF84.png" alt="カレーノとよはし">
+    <div class="header-text">
+      <h1>カレーノとよはし</h1>
+      <small>ORDER MANAGEMENT</small>
+    </div>
+  </div>
 </header>
 
 <div class="wrap">
