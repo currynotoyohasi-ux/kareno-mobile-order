@@ -550,7 +550,12 @@ document.getElementById("downloadCsvBtn").onclick = async () => {
         type="number"
         value="${product.price}"
       >
-
+<label><b>表示順</b></label>
+<input
+  id="productSort-${product.id}"
+  type="number"
+  value="${product.sort_order ?? 0}"
+>
       <label style="display:block;margin:12px 0;">
         <input
           id="productAvailable-${product.id}"
@@ -597,7 +602,9 @@ document.getElementById("downloadCsvBtn").onclick = async () => {
   const isAvailable =
     document.getElementById(`productAvailable-${id}`).checked;
 
-  const fileInput =
+const sortOrder =
+  Number(document.getElementById(`productSort-${id}`).value);
+    const fileInput =
     document.getElementById(`productImage-${id}`);
 
   let imageUrl = null;
@@ -632,7 +639,8 @@ document.getElementById("downloadCsvBtn").onclick = async () => {
   const updateData = {
     name:name,
     price:price,
-    is_available:isAvailable
+    is_available:isAvailable,
+  sort_order:sortOrder 
   };
 
   if(imageUrl){
