@@ -669,7 +669,10 @@ document.getElementById("orderBtn").onclick=async()=>{
 
   const pickup=
     document.getElementById("pickup").value;
-
+if(!isPickupWithinBusinessHours()){
+  alert("営業時間外の受取時間は指定できません");
+  return;
+}
   const result=
     document.getElementById("result");
 
