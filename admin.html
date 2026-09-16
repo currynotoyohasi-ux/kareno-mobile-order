@@ -411,8 +411,16 @@ async function loadShopSettings(){
     return;
   }
 
-  document.getElementById("businessHours").value =
-    data?.business_hours || "";
+  const match = (data?.business_hours || "").match(
+  /(\d{1,2})月(\d{1,2})日\s*(\d{1,2}:\d{2})〜(\d{1,2}:\d{2})/
+);
+
+if(match){
+  document.getElementById("shopMonth").value = match[1];
+  document.getElementById("shopDay").value = match[2];
+  document.getElementById("openTime").value = match[3];
+  document.getElementById("closeTime").value = match[4];
+}
 
   document.getElementById("shopLocation").value =
     data?.location || "";
