@@ -264,6 +264,9 @@ button{
   <button id="tabReady" class="status-tab" type="button">
     🛍️ 受取待ち
   </button>
+<button id="tabDone" class="status-tab" type="button">
+  ✅ 完了履歴
+</button>
 </div>
     <div id="orders"></div>
 
@@ -312,7 +315,20 @@ document.getElementById("tabReady").onclick = () => {
 
   loadOrders();
 };
+document.getElementById("tabDone").onclick = () => {
+  currentTab = "done";
 
+  document.getElementById("tabDone")
+    .classList.add("active");
+
+  document.getElementById("tabCooking")
+    .classList.remove("active");
+
+  document.getElementById("tabReady")
+    .classList.remove("active");
+
+  loadOrders();
+};
 
 function yen(n){
   return "¥" + Number(n || 0).toLocaleString("ja-JP");
@@ -477,7 +493,8 @@ async function loadOrders(){
       order.status || "new";
 if (
   (currentTab === "cooking" && !["new", "cooking"].includes(status)) ||
-  (currentTab === "ready" && status !== "ready")
+  (currentTab === "ready" && status !== "ready") ||
+  (currentTab === "done" && status !== "done")
 ) {
   return;
 }
