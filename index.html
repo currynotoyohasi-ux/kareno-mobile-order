@@ -473,8 +473,7 @@ function refresh(){
   document.getElementById("total").textContent=yen(total());
 
  document.getElementById("orderBtn").disabled =
-  Object.keys(cart).length===0 ||
-  !isPickupWithinBusinessHours();
+  Object.keys(cart).length===0;
 }
 
 function changeQty(id,delta){
@@ -681,7 +680,7 @@ document.getElementById("orderBtn").onclick=async()=>{
   const pickup=
     document.getElementById("pickup").value;
 if(!isPickupWithinBusinessHours()){
-  alert("営業時間外の受取時間は指定できません");
+  alert("受付時間外です。営業日・営業時間内の受取時間を選択してください。");
   return;
 }
   const result=
