@@ -424,7 +424,33 @@ function setDefaultPickup(){
 }
 
 setDefaultPickup();
+  document.getElementById("pickup").addEventListener("change", refresh);
+function isPickupWithinBusinessHours(){
+  const pickupValue = document.getElementById("pickup").value;
 
+  const hoursText =
+    document.getElementById("shopHours").textContent || "";
+
+  const match = hoursText.match(/(\d{1,2}):(\d{2}).*?(\d{1,2}):(\d{2})/);
+
+  if(!pickupValue || !match){
+    return true;
+  }
+
+  const pickup = new Date(pickupValue);
+
+  const pickupMinutes =
+    pickup.getHours() * 60 + pickup.getMinutes();
+
+  const openMinutes =
+    Number(match[1]) * 60 + Number(match[2]);
+
+  const closeMinutes =
+    Number(match[3]) * 60 + Number(match[4]);
+
+  return pickupMinutes >= openMinutes &&
+         pickupMinutes <= closeMinutes;
+}
 function total(){
   return products.reduce(
     (sum,p)=>sum+(cart[p.id]||0)*p.price,
@@ -435,8 +461,9 @@ function total(){
 function refresh(){
   document.getElementById("total").textContent=yen(total());
 
-  document.getElementById("orderBtn").disabled=
-  Object.keys(cart).length===0;
+ document.getElementById("orderBtn").disabled =
+  Object.keys(cart).length===0 ||
+  !isPickupWithinBusinessHours();
 }
 
 function changeQty(id,delta){
