@@ -313,7 +313,27 @@ button{
 
 </div>
   </div>
+<div id="shopSettings" class="card">
+  <h2>🏪 店舗設定</h2>
 
+  <label><b>営業時間</b></label>
+  <input
+    id="businessHours"
+    type="text"
+    placeholder="例：11:00〜19:00"
+  >
+
+  <label><b>出店場所</b></label>
+  <input
+    id="shopLocation"
+    type="text"
+    placeholder="例：夢屋 豊橋店"
+  >
+
+  <button id="saveShopSettingsBtn" class="primary">
+    保存
+  </button>
+</div>
 </div>
 
 <script>
@@ -325,7 +345,52 @@ const SUPABASE_KEY =
 
 const client =
   supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+async function loadShopSettings(){
+  const { data, error } = await client
+    .from("shop_settings")
+    .select("business_hours,location")
+    .eq("id", 1)
+    .single();
 
+  if(error){
+    console.error(error);
+    return;
+  }
+
+  document.getElementById("businessHours").value =
+    data?.business_hours || "";
+
+  document.getElementById("shopLocation").value =
+    data?.location || "";
+}
+
+document.getElementById("saveShopSettingsBtn").onclick =
+async function(){
+
+  const businessHours =
+    document.getElementById("businessHours").value.trim();
+
+  const location =
+    document.getElementById("shopLocation").value.trim();
+
+  const { error } = await client
+    .from("shop_settings")
+    .update({
+      business_hours: businessHours,
+      location: location,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", 1);
+
+  if(error){
+    alert("店舗設定を保存できませんでした：" + error.message);
+    return;
+  }
+
+  alert("店舗設定を保存しました！");
+};
+
+loadShopSettings();
 const statusName = {
   new: "新規注文",
   cooking: "調理中",
