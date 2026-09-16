@@ -289,6 +289,10 @@ const statusName = {
   done: "完了"
 };
 
+let currentTab = "cooking";
+
+
+
 function yen(n){
   return "¥" + Number(n || 0).toLocaleString("ja-JP");
 }
@@ -450,7 +454,12 @@ async function loadOrders(){
 
     const status =
       order.status || "new";
-
+if (
+  (currentTab === "cooking" && !["new", "cooking"].includes(status)) ||
+  (currentTab === "ready" && status !== "ready")
+) {
+  return;
+}
     const card =
       document.createElement("div");
 
