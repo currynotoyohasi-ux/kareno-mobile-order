@@ -427,26 +427,37 @@ setDefaultPickup();
   document.getElementById("pickup").addEventListener("change", refresh);
 function isPickupWithinBusinessHours(){
   const pickupValue = document.getElementById("pickup").value;
-
   const hoursText =
     document.getElementById("shopHours").textContent || "";
 
-  const match = hoursText.match(/(\d{1,2}):(\d{2}).*?(\d{1,2}):(\d{2})/);
+  const match = hoursText.match(
+    /(\d{1,2})月(\d{1,2})日\s*(\d{1,2}):(\d{2})〜(\d{1,2}):(\d{2})/
+  );
 
   if(!pickupValue || !match){
-    return true;
+    return false;
   }
 
   const pickup = new Date(pickupValue);
+
+  const shopMonth = Number(match[1]);
+  const shopDay = Number(match[2]);
+
+  if(
+    pickup.getMonth() + 1 !== shopMonth ||
+    pickup.getDate() !== shopDay
+  ){
+    return false;
+  }
 
   const pickupMinutes =
     pickup.getHours() * 60 + pickup.getMinutes();
 
   const openMinutes =
-    Number(match[1]) * 60 + Number(match[2]);
+    Number(match[3]) * 60 + Number(match[4]);
 
   const closeMinutes =
-    Number(match[3]) * 60 + Number(match[4]);
+    Number(match[5]) * 60 + Number(match[6]);
 
   return pickupMinutes >= openMinutes &&
          pickupMinutes <= closeMinutes;
