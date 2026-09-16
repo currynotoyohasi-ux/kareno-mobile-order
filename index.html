@@ -26,6 +26,35 @@ header{
   font-weight:900;
   font-size:21px;
 }
+  .header-brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.header-brand img{
+  width:64px;
+  height:64px;
+  object-fit:contain;
+  border-radius:12px;
+  background:white;
+  padding:4px;
+}
+
+.header-text{
+  display:flex;
+  flex-direction:column;
+}
+
+.header-text strong{
+  font-size:24px;
+  font-weight:900;
+}
+
+.header-text small{
+  font-size:12px;
+  font-weight:800;
+}
 .hero{
   margin:14px;
   background:#1a1a1a;
@@ -247,8 +276,13 @@ header{
 <div class="app">
 
 <header>
-🦌 カレーノとよはし
-<small style="display:block;font-size:11px">MOBILE ORDER</small>
+  <div class="header-brand">
+    <img src="992418E9-F1D5-4D18-BB8E-DCB3D3DAEF84.png" alt="カレーノとよはし">
+    <div class="header-text">
+      <strong>カレーノとよはし</strong>
+      <small>MOBILE ORDER</small>
+    </div>
+  </div>
 </header>
 
 <div class="hero">
