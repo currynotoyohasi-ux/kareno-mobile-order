@@ -192,7 +192,7 @@ button{
   display:none;
 }
 .status-tabs{
-  display:grid;grid-template-columns:repeat(3,1fr);
+ grid-template-columns:repeat(4,1fr);
   gap:10px;
   margin:14px 0;
 }
@@ -267,6 +267,9 @@ button{
 <button id="tabDone" class="status-tab" type="button">
   ✅ 完了履歴
 </button>
+<button id="downloadCsvBtn" class="status-tab" type="button">
+  📥 CSV
+</button>
 </div>
     <div id="orders"></div>
 
@@ -329,7 +332,115 @@ document.getElementById("tabDone").onclick = () => {
 
   loadOrders();
 };
+document.getElementById("downloadCsvBtn").onclick = async () => {
+  const { data: orders, error: orderError } =
+    await client
+      .from("orders")
+      .select("*")
+      .eq("status", "done")
+      .order("pickup_time", { ascending: true });
 
+  if (orderError) {
+    alert("注文データを取得できませんでした");
+    return;
+  }
+
+  if (!orders || orders.length === 0) {
+    alert("完了済みの注文がありません");
+    return;
+  }
+
+  const ids = orders.map(order => order.id);
+
+  const { data: items, error: itemError } =
+    await client
+      .from("order_items")
+      .select("*")
+      .in("order_id", ids);
+
+  if (itemError) {
+    alert("商品データを取得できませんでした");
+    return;
+  }
+
+  const grouped = {};
+
+  (items || []).forEach(item => {
+    if (!grouped[item.order_id]) {
+      grouped[item.order_id] = [];
+    }
+    grouped[item.order_id].push(item);
+  });
+
+  const rows = [
+    [
+      "注文番号",
+      "名前",
+      "受取時間",
+      "支払方法",
+      "商品",
+      "数量",
+      "小計",
+      "合計金額",
+      "ステータス"
+    ]
+  ];
+
+  orders.forEach(order => {
+    const orderItems = grouped[order.id] || [];
+
+    if (orderItems.length === 0) {
+      rows.push([
+        order.order_number,
+        order.customer_name,
+        formatTime(order.pickup_time),
+        order.payment_method,
+        "",
+        "",
+        "",
+        order.total_amount,
+        "完了"
+      ]);
+    } else {
+      orderItems.forEach(item => {
+        rows.push([
+          order.order_number,
+          order.customer_name,
+          formatTime(order.pickup_time),
+          order.payment_method,
+          item.product_name,
+          item.quantity,
+          item.subtotal,
+          order.total_amount,
+          "完了"
+        ]);
+      });
+    }
+  });
+
+  const csv =
+    "\uFEFF" +
+    rows
+      .map(row =>
+        row.map(value =>
+          `"${String(value ?? "").replaceAll('"', '""')}"`
+        ).join(",")
+      )
+      .join("\n");
+
+  const blob = new Blob([csv], {
+    type: "text/csv;charset=utf-8;"
+  });
+
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "完了注文履歴.csv";
+  a.click();
+
+  URL.revokeObjectURL(url);
+};
 function yen(n){
   return "¥" + Number(n || 0).toLocaleString("ja-JP");
 }
