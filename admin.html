@@ -1173,22 +1173,84 @@ if ("serviceWorker" in navigator) {
 }
 const notificationBtn = document.getElementById("enableNotificationsBtn");
 
-if (notificationBtn) {
-  if (Notification.permission === "granted") {
-    notificationBtn.textContent = "✅ 通知は有効です";
+const VAPID_PUBLIC_KEY =
+  "BOlbLgx1yTmM7P-fJWXbc8NOX_IkzQpyaWbjgFhEuh-wQZTsTCNQDNdD7r9JD4o6dJ9dly5TV6nFnPE8qNrfohg";
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, "+")
+    .replace(/_/g, "/");
+
+  const rawData = atob(base64);
+
+  return Uint8Array.from(
+    [...rawData].map(char => char.charCodeAt(0))
+  );
+}
+
+async function registerPushSubscription() {
+  const registration = await navigator.serviceWorker.ready;
+
+  let subscription =
+    await registration.pushManager.getSubscription();
+
+  if (!subscription) {
+    subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+    });
   }
 
-  notificationBtn.addEventListener("click", async () => {
-    const permission = await Notification.requestPermission();
+  const {
+    data: { session }
+  } = await client.auth.getSession();
 
-    if (permission === "granted") {
-      notificationBtn.textContent = "✅ 通知は有効です";
-      alert("通知を許可しました！");
-    } else {
-      alert("通知が許可されませんでした");
+  if (!session) {
+    throw new Error("先に管理者ログインしてください");
+  }
+
+  const { error } = await client
+    .from("push_subscriptions")
+    .upsert(
+      {
+        endpoint: subscription.endpoint,
+        subscription: subscription.toJSON(),
+        device_name: "iPad",
+        updated_at: new Date().toISOString()
+      },
+      {
+        onConflict: "endpoint"
+      }
+    );
+
+  if (error) {
+    throw error;
+  }
+}
+
+if (notificationBtn) {
+  notificationBtn.addEventListener("click", async () => {
+    try {
+      const permission =
+        await Notification.requestPermission();
+
+      if (permission !== "granted") {
+        alert("通知が許可されませんでした");
+        return;
+      }
+
+      await registerPushSubscription();
+
+      notificationBtn.textContent =
+        "✅ このiPadは通知登録済み";
+
+      alert("このiPadを注文通知端末として登録しました！");
+    } catch (error) {
+      console.error(error);
+      alert(error.message || "通知登録に失敗しました");
     }
   });
-}
-</script>
+}</script>
 </body>
 </html>
