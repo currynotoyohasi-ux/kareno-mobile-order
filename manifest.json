@@ -1,0 +1,9 @@
+{
+  "name": "カレーノとよはし 注文管理",
+  "short_name": "注文管理",
+  "start_url": "./admin.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#f4c542",
+  "icons": []
+}
