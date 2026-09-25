@@ -383,12 +383,19 @@ button{
   <input id="closeTime" type="time">
 </div>
 
-  <label><b>出店場所</b></label>
-  <input
-    id="shopLocation"
-    type="text"
-    placeholder="例：夢屋 豊橋店"
-  >
+ <label><b>出店・受け取り場所</b></label>
+<input
+id="shopLocation"
+type="text"
+placeholder="例：夢屋 豊橋店"
+>
+
+<label><b>GoogleマップURL</b></label>
+<input
+id="shopGoogleMapsUrl"
+type="url"
+placeholder="https://maps.google.com/..."
+>
 
   <button id="saveShopSettingsBtn" class="primary">
     保存
@@ -408,7 +415,7 @@ const client =
 async function loadShopSettings(){
   const { data, error } = await client
     .from("shop_settings")
-    .select("business_hours,location")
+    .select("business_hours,location,google_maps_url")
     .eq("id", 1)
     .single();
 
@@ -430,7 +437,8 @@ if(match){
 
   document.getElementById("shopLocation").value =
     data?.location || "";
-}
+document.getElementById("shopGoogleMapsUrl").value =
+data?.google_maps_url || "";}
 
 document.getElementById("saveShopSettingsBtn").onclick =
 async function(){
