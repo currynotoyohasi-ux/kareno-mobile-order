@@ -452,7 +452,7 @@ const businessHours =
   `${month}月${day}日 ${openTime}〜${closeTime}`;
   const location =
     document.getElementById("shopLocation").value.trim();
-const googleMapsUrl =
+let googleMapsUrl =
   document.getElementById("shopGoogleMapsUrl").value.trim();  
   const { error } = await client
     .from("shop_settings")
