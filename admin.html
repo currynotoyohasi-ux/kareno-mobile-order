@@ -582,6 +582,8 @@ loadCustomizationGroups();
 
 let currentTab = "cooking";
 document.getElementById("tabCooking").onclick = () => {
+ document.getElementById("productManager").classList.add("hidden");
+document.getElementById("orders").classList.remove("hidden");
   currentTab = "cooking";
 
   document.getElementById("tabCooking")
