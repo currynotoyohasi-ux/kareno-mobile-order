@@ -581,9 +581,11 @@ loadCustomizationGroups();
 };
 
 let currentTab = "cooking";
+
 document.getElementById("tabCooking").onclick = () => {
- document.getElementById("productManager").classList.add("hidden");
-document.getElementById("orders").classList.remove("hidden");
+  document.getElementById("orders").classList.remove("hidden");
+  document.getElementById("productManager").classList.add("hidden");
+
   currentTab = "cooking";
 
   document.getElementById("tabCooking")
@@ -596,6 +598,9 @@ document.getElementById("orders").classList.remove("hidden");
 };
 
 document.getElementById("tabReady").onclick = () => {
+  document.getElementById("orders").classList.remove("hidden");
+  document.getElementById("productManager").classList.add("hidden");
+
   currentTab = "ready";
 
   document.getElementById("tabReady")
@@ -607,6 +612,8 @@ document.getElementById("tabReady").onclick = () => {
   loadOrders();
 };
 document.getElementById("tabDone").onclick = () => {
+  document.getElementById("orders").classList.remove("hidden");
+document.getElementById("productManager").classList.add("hidden");
   currentTab = "done";
 
   document.getElementById("tabDone")
