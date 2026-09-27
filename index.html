@@ -309,8 +309,12 @@ header{
   </div>
 <div id="shopInfo" style="margin-top:10px;font-size:14px;line-height:1.6;">
   <div id="shopHours">🕒 営業時間：読み込み中...</div>
-  <div id="shopLocationDisplay">📍 出店場所：読み込み中...</div>
+  <div id="shopLocation" style="font-size:18px;font-weight:700;">
+  📍 出店・受け取り場所：読み込み中...
 </div>
+<div id="locationNotice" class="notice" style="margin-top:10px;">
+  📍 出店・受け取り場所をご確認ください
+</div></div>
 </header>
 
 <div class="hero">
@@ -387,7 +391,7 @@ supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 async function loadShopInfo(){
   const { data, error } = await client
     .from("shop_settings")
-    .select("business_hours,location")
+   .select("business_hours,location,google_maps_url")
     .eq("id", 1)
     .single();
 
@@ -399,8 +403,20 @@ async function loadShopInfo(){
   document.getElementById("shopHours").textContent =
     "🕒 営業時間：" + (data?.business_hours || "未設定");
 
-  document.getElementById("shopLocationDisplay").textContent =
-    "📍 出店場所：" + (data?.location || "未設定");
+ const locationEl = document.getElementById("shopLocation");
+const locationName = data?.location || "未設定";
+
+if(data?.google_maps_url){
+  locationEl.innerHTML =
+    '📍 出店・受け取り場所：<a href="' +
+    data.google_maps_url +
+    '" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:underline;">' +
+    locationName +
+    '</a>';
+}else{
+  locationEl.textContent =
+    "📍 出店・受け取り場所：" + locationName;
+}
 }
 
 loadShopInfo();
