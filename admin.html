@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+＃<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="utf-8">
@@ -762,6 +762,44 @@ document.getElementById("downloadCsvBtn").onclick = async () => {
     box.appendChild(card);
   });
 }
+ async function shiftSortOrders(targetSort, excludeId = null) {
+  const { data: products, error } = await client
+    .from("products")
+    .select("id, sort_order")
+    .gte("sort_order", targetSort)
+    .order("sort_order", { ascending: true });
+
+  if (error) throw error;
+
+  const rows = (products || []).filter(
+    p => String(p.id) !== String(excludeId)
+  );
+
+  let current = targetSort;
+  const toShift = [];
+
+  while (true) {
+    const found = rows.find(p => Number(p.sort_order) === current);
+
+    if (!found) break;
+
+    toShift.push(found);
+    current++;
+  }
+
+  for (let i = toShift.length - 1; i >= 0; i--) {
+    const p = toShift[i];
+
+    const { error: updateError } = await client
+      .from("products")
+      .update({
+        sort_order: Number(p.sort_order) + 1
+      })
+      .eq("id", p.id);
+
+    if (updateError) throw updateError;
+  }
+}
   async function saveProduct(id){
 
   const name =
@@ -775,6 +813,7 @@ document.getElementById("downloadCsvBtn").onclick = async () => {
 
 const sortOrder =
   Number(document.getElementById(`productSort-${id}`).value);
+    await shiftSortOrders(sortOrder, id);
     const fileInput =
     document.getElementById(`productImage-${id}`);
 
@@ -879,7 +918,24 @@ const sortOrder =
   const btn = document.getElementById("addProductBtn");
   btn.disabled = true;
   btn.textContent = "追加中...";
+const sortText = prompt("表示順を入力してください");
 
+if (sortText === null) {
+  btn.disabled = false;
+  btn.textContent = "＋ 商品を追加";
+  return;
+}
+
+const sortOrder = Number(sortText);
+
+if (!Number.isFinite(sortOrder) || sortOrder < 0) {
+  alert("表示順は0以上の数字で入力してください");
+  btn.disabled = false;
+  btn.textContent = "＋ 商品を追加";
+  return;
+}
+
+await shiftSortOrders(sortOrder);
   const { error } =
     await client
       .from("products")
@@ -888,7 +944,7 @@ const sortOrder =
         price:price,
         category:"",
         is_available:true,
-        sort_order:999
+        sort_order:sortOrder
       });
 
   btn.disabled = false;
