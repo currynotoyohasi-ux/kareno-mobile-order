@@ -879,17 +879,54 @@ const sortOrder =
     return;
   }
 
-  const { error } =
+  const { data: targetProduct, error: fetchError } = await client
+  .from("products")
+  .select("sort_order")
+  .eq("id", id)
+  .single();
+
+
+    if (fetchError) {
+  alert("商品情報を取得できませんでした：" + fetchError.message);
+  return;
+}
+
+const deletedSortOrder = Number(targetProduct?.sort_order);
+    const { error } =
     await client
       .from("products")
-      .delete()
+      
+    .delete()
       .eq("id",id);
 
   if(error){
     alert("商品を削除できませんでした：" + error.message);
     return;
   }
+const { data: laterProducts, error: laterError } = await client
+  .from("products")
+  .select("id, sort_order")
+  .gt("sort_order", deletedSortOrder)
+  .order("sort_order", { ascending: true });
 
+if (laterError) {
+  alert("表示順の詰め直しに失敗しました：" + laterError.message);
+  return;
+}
+
+for (const product of laterProducts || []) {
+  const { error: shiftError } = await client
+    .from("products")
+    .update({
+      sort_order: Number(product.sort_order) - 1
+    })
+    .eq("id", product.id);
+
+  if (shiftError) {
+    alert("表示順の更新に失敗しました：" + shiftError.message);
+    return;
+  }
+}
   alert("商品を削除しました");
   loadProducts();
 }
