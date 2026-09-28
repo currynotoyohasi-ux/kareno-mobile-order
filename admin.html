@@ -430,6 +430,46 @@ const SUPABASE_KEY =
 
 const client =
   supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+ document.getElementById("addCustomizationGroupBtn").onclick = async () => {
+  const name = prompt("カスタマイズ項目名を入力してください");
+
+  if (!name || !name.trim()) {
+    return;
+  }
+
+  const { data: existing, error: countError } = await client
+    .from("customization_groups")
+    .select("sort_order")
+    .order("sort_order", { ascending: false })
+    .limit(1);
+
+  if (countError) {
+    alert("表示順を取得できませんでした：" + countError.message);
+    return;
+  }
+
+  const nextSortOrder =
+    existing && existing.length > 0
+      ? Number(existing[0].sort_order) + 1
+      : 1;
+
+  const { error } = await client
+    .from("customization_groups")
+    .insert({
+      name: name.trim(),
+      is_required: true,
+      sort_order: nextSortOrder
+    });
+
+  if (error) {
+    alert("カスタマイズ項目を追加できませんでした：" + error.message);
+    return;
+  }
+
+  await loadCustomizationGroups();
+
+  alert("カスタマイズ項目を追加しました！");
+};
 async function loadCustomizationGroups() {
   const container = document.getElementById("customizationGroups");
 
