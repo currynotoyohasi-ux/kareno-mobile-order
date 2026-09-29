@@ -526,14 +526,33 @@ async function loadCustomizationGroups() {
 
       <div style="margin-top:8px;">
         ${options.map(option =>
-          `<span style="
-            display:inline-block;
-            padding:5px 9px;
-            margin:3px;
-            border:1px solid #ccc;
-            border-radius:999px;
-          ">${option.label}</span>`
-        ).join("")}
+  `<span style="
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:5px 9px;
+    margin:3px;
+    border:1px solid #ccc;
+    border-radius:999px;
+  ">
+    ${option.label}
+    <button
+      type="button"
+      class="delete-option-btn"
+      data-option-id="${option.id}"
+      style="
+        border:none;
+        background:transparent;
+        color:#d33;
+        font-weight:bold;
+        padding:0;
+        cursor:pointer;
+      "
+    >
+      ×
+    </button>
+  </span>`
+).join("")}
       </div>
     <button
   type="button"
@@ -565,7 +584,33 @@ async function loadCustomizationGroups() {
   }
 }
   document.addEventListener("click", async (event) => {
-  const deleteGroupButton = event.target.closest(".delete-group-btn");
+  const deleteOptionButton = event.target.closest(".delete-option-btn");
+
+if (deleteOptionButton) {
+  const optionId = deleteOptionButton.dataset.optionId;
+
+  const ok = confirm("この選択肢を削除しますか？");
+
+  if (!ok) {
+    return;
+  }
+
+  const { error } = await client
+    .from("customization_options")
+    .delete()
+    .eq("id", optionId);
+
+  if (error) {
+    alert("選択肢を削除できませんでした：" + error.message);
+    return;
+  }
+
+  await loadCustomizationGroups();
+
+  alert("選択肢を削除しました！");
+  return;
+}
+    const deleteGroupButton = event.target.closest(".delete-group-btn");
 
 if (deleteGroupButton) {
   const groupId = deleteGroupButton.dataset.groupId;
