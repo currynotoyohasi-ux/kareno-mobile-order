@@ -988,7 +988,32 @@ document.getElementById("downloadCsvBtn").onclick = async () => {
       .from("products")
       .select("*")
       .order("sort_order", { ascending:true });
+const { data: customizationGroups, error: customizationGroupsError } =
+  await client
+    .from("customization_groups")
+    .select("id,name,sort_order")
+    .order("sort_order", { ascending:true });
 
+if (customizationGroupsError) {
+  box.innerHTML =
+    '<div class="card error">' +
+    escapeHtml(customizationGroupsError.message) +
+    '</div>';
+  return;
+}
+
+const { data: productCustomizationLinks, error: productCustomizationLinksError } =
+  await client
+    .from("product_customization_groups")
+    .select("product_id,customization_group_id");
+
+if (productCustomizationLinksError) {
+  box.innerHTML =
+    '<div class="card error">' +
+    escapeHtml(productCustomizationLinksError.message) +
+    '</div>';
+  return;
+}
   if(error){
     box.innerHTML =
       '<div class="card error">'
@@ -1039,7 +1064,34 @@ document.getElementById("downloadCsvBtn").onclick = async () => {
         >
         販売中
       </label>
+　　　　<div style="margin:14px 0;">
+  <div style="font-weight:bold;margin-bottom:6px;">
+    この商品で使うカスタマイズ
+  </div>
 
+  ${
+    (customizationGroups || []).map(group => {
+      const checked = (productCustomizationLinks || []).some(link =>
+        String(link.product_id) === String(product.id) &&
+        String(link.customization_group_id) === String(group.id)
+      );
+
+      return `
+        <label style="display:block;margin:6px 0;">
+          <input
+            type="checkbox"
+            class="product-customization-checkbox"
+            data-product-id="${product.id}"
+            data-group-id="${group.id}"
+            ${checked ? "checked" : ""}
+            style="width:auto;"
+          >
+          ${escapeHtml(group.name)}
+        </label>
+      `;
+    }).join("")
+  }
+</div>
       <label><b>商品画像</b></label>
       <input
         id="productImage-${product.id}"
@@ -1681,6 +1733,41 @@ if (notificationBtn) {
       alert(error.message || "通知登録に失敗しました");
     }
   });
+document.addEventListener("change", async (event) => {
+  const checkbox = event.target.closest(".product-customization-checkbox");
+
+  if (!checkbox) return;
+
+  const productId = Number(checkbox.dataset.productId);
+  const groupId = Number(checkbox.dataset.groupId);
+
+  if (checkbox.checked) {
+    const { error } = await client
+      .from("product_customization_groups")
+      .insert({
+        product_id: productId,
+        customization_group_id: groupId
+      });
+
+    if (error) {
+      checkbox.checked = false;
+      alert("カスタマイズを紐付けできませんでした：" + error.message);
+      return;
+    }
+  } else {
+    const { error } = await client
+      .from("product_customization_groups")
+      .delete()
+      .eq("product_id", productId)
+      .eq("customization_group_id", groupId);
+
+    if (error) {
+      checkbox.checked = true;
+      alert("カスタマイズの紐付けを解除できませんでした：" + error.message);
+      return;
+    }
+  }
+});
 }</script>
 </body>
 </html>
