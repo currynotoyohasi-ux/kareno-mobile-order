@@ -507,9 +507,22 @@ async function loadCustomizationGroups() {
 
     box.innerHTML = `
       <b>${group.name}</b>
-      <span style="font-size:12px;margin-left:8px;">
-        ${group.is_required ? "必須" : "任意"}
-      </span>
+      <button
+  type="button"
+  class="toggle-required-btn"
+  data-group-id="${group.id}"
+  data-required="${group.is_required}"
+  style="
+    margin-left:8px;
+    padding:4px 8px;
+    font-size:12px;
+    border:1px solid #ccc;
+    border-radius:999px;
+    background:#fff;
+  "
+>
+  ${group.is_required ? "必須" : "任意"}
+</button>
 
       <div style="margin-top:8px;">
         ${options.map(option =>
@@ -536,6 +549,28 @@ async function loadCustomizationGroups() {
   }
 }
   document.addEventListener("click", async (event) => {
+    const requiredButton = event.target.closest(".toggle-required-btn");
+
+if (requiredButton) {
+  const groupId = requiredButton.dataset.groupId;
+  const currentRequired = requiredButton.dataset.required === "true";
+  const newRequired = !currentRequired;
+
+  const { error } = await client
+    .from("customization_groups")
+    .update({
+      is_required: newRequired
+    })
+    .eq("id", groupId);
+
+  if (error) {
+    alert("必須・任意を変更できませんでした：" + error.message);
+    return;
+  }
+
+  await loadCustomizationGroups();
+  return;
+}
   const button = event.target.closest(".add-option-btn");
 
   if (!button) return;
