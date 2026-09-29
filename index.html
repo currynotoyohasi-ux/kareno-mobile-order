@@ -489,7 +489,7 @@ function isPickupWithinBusinessHours(){
   return pickupMinutes >= openMinutes &&
          pickupMinutes <= closeMinutes;
 }
-  function total(){
+ function total(){
   return Object.entries(cart).reduce((sum, [key, qty]) => {
     const productId =
       cartDetails[key]?.product_id ??
@@ -498,9 +498,16 @@ function isPickupWithinBusinessHours(){
     const product = products.find(
       p => Number(p.id) === Number(productId)
     );
-    function refresh(){
+
     return sum + (product ? product.price * qty : 0);
   }, 0);
+}
+
+function refresh(){
+  document.getElementById("total").textContent = yen(total());
+
+  document.getElementById("orderBtn").disabled =
+    Object.keys(cart).length === 0;
 }
   function changeQty(id, delta, selections = []) {
   const productId = Number(id);
