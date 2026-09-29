@@ -543,12 +543,56 @@ async function loadCustomizationGroups() {
 >
   ＋ 選択肢を追加
 </button>
+<button
+  type="button"
+  class="delete-group-btn"
+  data-group-id="${group.id}"
+  style="
+    margin-top:10px;
+    margin-left:8px;
+    padding:6px 10px;
+    border:1px solid #d33;
+    border-radius:8px;
+    background:#fff;
+    color:#d33;
+  "
+>
+  🗑 項目を削除
+</button>
     `;
 
     container.appendChild(box);
   }
 }
   document.addEventListener("click", async (event) => {
+  const deleteGroupButton = event.target.closest(".delete-group-btn");
+
+if (deleteGroupButton) {
+  const groupId = deleteGroupButton.dataset.groupId;
+
+  const ok = confirm(
+    "このカスタマイズ項目を削除しますか？\n選択肢もすべて削除されます。"
+  );
+
+  if (!ok) {
+    return;
+  }
+
+  const { error } = await client
+    .from("customization_groups")
+    .delete()
+    .eq("id", groupId);
+
+  if (error) {
+    alert("カスタマイズ項目を削除できませんでした：" + error.message);
+    return;
+  }
+
+  await loadCustomizationGroups();
+
+  alert("カスタマイズ項目を削除しました！");
+  return;
+}
     const requiredButton = event.target.closest(".toggle-required-btn");
 
 if (requiredButton) {
