@@ -422,6 +422,17 @@ if(data?.google_maps_url){
 loadShopInfo();
 let products=[];
 let cart={};
+  let cartDetails={};
+  function makeCartKey(productId, selections = []) {
+  if (!selections.length) return String(productId);
+
+  const optionPart = selections
+    .map(item => `${item.group_id}:${item.option_id}`)
+    .sort()
+    .join("|");
+
+  return `${productId}__${optionPart}`;
+}
 let paymentMethod="現金";
 let statusTimer=null;
 
@@ -479,10 +490,55 @@ function isPickupWithinBusinessHours(){
          pickupMinutes <= closeMinutes;
 }
 function total(){
-  return products.reduce(
-    (sum,p)=>sum+(cart[p.id]||0)*p.price,
+  function total(){
+  return Object.entries(cart).reduce((sum, [key, qty]) => {
+    const productId =
+      cartDetails[key]?.product_id ??
+      Number(String(key).split("__")[0]);
+
+    const product = products.find(
+      p => Number(p.id) === Number(productId)
+    );
+
+    return sum + (product ? product.price * qty : 0);
+  }, 0);
+}
+  function changeQty(id, delta, selections = []) {
+  const productId = Number(id);
+  const key = makeCartKey(productId, selections);
+
+  cart[key] = (cart[key] || 0) + delta;
+
+  if (cart[key] <= 0) {
+    delete cart[key];
+    delete cartDetails[key];
+  } else {
+    cartDetails[key] = {
+      product_id: productId,
+      selections: selections
+    };
+  }
+
+  const productTotalQty = Object.entries(cart).reduce(
+    (sum, [cartKey, qty]) => {
+      const itemProductId =
+        cartDetails[cartKey]?.product_id ??
+        Number(String(cartKey).split("__")[0]);
+
+      return Number(itemProductId) === productId
+        ? sum + qty
+        : sum;
+    },
     0
   );
+
+  const qtyEl = document.getElementById("q" + productId);
+
+  if (qtyEl) {
+    qtyEl.textContent = productTotalQty;
+  }
+
+  refresh();
 }
 
 function refresh(){
@@ -654,7 +710,40 @@ function handleAddProduct(id){
   document.getElementById("cancelCustomizationBtn").onclick = () => {
     overlay.remove();
   };
+document.getElementById("confirmCustomizationBtn").onclick = () => {
+  const selections = [];
+  let missingRequired = false;
 
+  (product.customizations || []).forEach(group => {
+    const selected = overlay.querySelector(
+      `input[name="customization-${group.id}"]:checked`
+    );
+
+    if (group.is_required && !selected) {
+      missingRequired = true;
+      return;
+    }
+
+    if (selected) {
+      selections.push({
+        group_id: group.id,
+        group_name: group.name,
+        option_id: Number(selected.value),
+        option_label: selected.dataset.label
+      });
+    }
+  });
+
+  if (missingRequired) {
+    alert("必須項目をすべて選択してください");
+    return;
+  }
+
+  product._selectedCustomizations = selections;
+
+  changeQty(product.id, 1, selections);
+  overlay.remove();
+};
   overlay.addEventListener("click", event => {
     if (event.target === overlay) {
       overlay.remove();
