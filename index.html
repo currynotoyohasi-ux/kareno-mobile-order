@@ -489,7 +489,6 @@ function isPickupWithinBusinessHours(){
   return pickupMinutes >= openMinutes &&
          pickupMinutes <= closeMinutes;
 }
-function total(){
   function total(){
   return Object.entries(cart).reduce((sum, [key, qty]) => {
     const productId =
