@@ -522,11 +522,65 @@ async function loadCustomizationGroups() {
           ">${option.label}</span>`
         ).join("")}
       </div>
+    <button
+  type="button"
+  class="add-option-btn"
+  data-group-id="${group.id}"
+  style="margin-top:10px;"
+>
+  ＋ 選択肢を追加
+</button>
     `;
 
     container.appendChild(box);
   }
 }
+  document.addEventListener("click", async (event) => {
+  const button = event.target.closest(".add-option-btn");
+
+  if (!button) return;
+
+  const groupId = button.dataset.groupId;
+  const label = prompt("選択肢名を入力してください");
+
+  if (!label || !label.trim()) {
+    return;
+  }
+
+  const { data: existing, error: sortError } = await client
+    .from("customization_options")
+    .select("sort_order")
+    .eq("group_id", groupId)
+    .order("sort_order", { ascending: false })
+    .limit(1);
+
+  if (sortError) {
+    alert("表示順を取得できませんでした：" + sortError.message);
+    return;
+  }
+
+  const nextSortOrder =
+    existing && existing.length > 0
+      ? Number(existing[0].sort_order) + 1
+      : 1;
+
+  const { error } = await client
+    .from("customization_options")
+    .insert({
+      group_id: Number(groupId),
+      label: label.trim(),
+      sort_order: nextSortOrder
+    });
+
+  if (error) {
+    alert("選択肢を追加できませんでした：" + error.message);
+    return;
+  }
+
+  await loadCustomizationGroups();
+
+  alert("選択肢を追加しました！");
+});
   async function loadShopSettings(){
   const { data, error } = await client
     .from("shop_settings")
