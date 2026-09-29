@@ -504,7 +504,155 @@ function changeQty(id,delta){
 
   refresh();
 }
+function handleAddProduct(id){
+  const product = products.find(p => Number(p.id) === Number(id));
 
+  if (!product) return;
+
+  if (!product.customizations || product.customizations.length === 0) {
+    changeQty(id, 1);
+    return;
+  }
+
+  openCustomizationModal(product);
+}
+  function openCustomizationModal(product) {
+  const oldModal = document.getElementById("customizationModal");
+
+  if (oldModal) {
+    oldModal.remove();
+  }
+
+  const overlay = document.createElement("div");
+  overlay.id = "customizationModal";
+
+  overlay.style.cssText = `
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.55);
+    z-index:9999;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  `;
+
+  const groupsHtml = (product.customizations || []).map(group => {
+
+    const options = (group.customization_options || []).map(option => `
+      <label style="
+        display:block;
+        padding:10px 12px;
+        margin:6px 0;
+        border:1px solid #ddd;
+        border-radius:10px;
+        cursor:pointer;
+      ">
+        <input
+          type="radio"
+          name="customization-${group.id}"
+          value="${option.id}"
+          data-label="${escapeHtml(option.label)}"
+          style="width:auto;margin-right:8px;"
+        >
+        ${escapeHtml(option.label)}
+      </label>
+    `).join("");
+
+    return `
+      <div
+        class="customization-group"
+        data-group-id="${group.id}"
+        data-required="${group.is_required}"
+        data-group-name="${escapeHtml(group.name)}"
+        style="margin-bottom:20px;"
+      >
+        <div style="font-weight:bold;margin-bottom:8px;">
+          ${escapeHtml(group.name)}
+          <span style="
+            font-size:12px;
+            margin-left:6px;
+            color:${group.is_required ? "#d33" : "#777"};
+          ">
+            ${group.is_required ? "必須" : "任意"}
+          </span>
+        </div>
+
+        ${options}
+      </div>
+    `;
+  }).join("");
+
+  overlay.innerHTML = `
+    <div style="
+      width:100%;
+      max-width:520px;
+      max-height:85vh;
+      overflow-y:auto;
+      background:#fff;
+      border-radius:18px;
+      padding:20px;
+      box-sizing:border-box;
+    ">
+      <h2 style="margin-top:0;">
+        ${escapeHtml(product.name)}
+      </h2>
+
+      <div style="margin-bottom:18px;color:#555;">
+        こだわりを選んでください
+      </div>
+
+      ${groupsHtml}
+
+      <div style="
+        display:flex;
+        gap:10px;
+        margin-top:20px;
+      ">
+        <button
+          type="button"
+          id="cancelCustomizationBtn"
+          style="
+            flex:1;
+            padding:14px;
+            border-radius:12px;
+            border:1px solid #ccc;
+            background:#fff;
+          "
+        >
+          キャンセル
+        </button>
+
+        <button
+          type="button"
+          id="confirmCustomizationBtn"
+          style="
+            flex:1;
+            padding:14px;
+            border-radius:12px;
+            border:none;
+            background:#f5a000;
+            font-weight:bold;
+          "
+        >
+          決定
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  document.getElementById("cancelCustomizationBtn").onclick = () => {
+    overlay.remove();
+  };
+
+  overlay.addEventListener("click", event => {
+    if (event.target === overlay) {
+      overlay.remove();
+    }
+  });
+}
 async function loadProducts(){
   const menu=document.getElementById("menu");
 
@@ -522,8 +670,51 @@ async function loadProducts(){
 
     return;
   }
+const { data: customizationLinks, error: customizationError } =
+  await client
+    .from("product_customization_groups")
+    .select(`
+      product_id,
+      customization_group_id,
+      customization_groups (
+        id,
+        name,
+        is_required,
+        sort_order,
+        customization_options (
+          id,
+          label,
+          sort_order
+        )
+      )
+    `);
 
+if (customizationError) {
+  menu.innerHTML =
+    '<div class="notice err">カスタマイズ取得エラー：' +
+    customizationError.message +
+    '</div>';
+  return;
+}
   products=data||[];
+  products = products.map(product => {
+  const links = (customizationLinks || [])
+    .filter(link => String(link.product_id) === String(product.id))
+    .map(link => link.customization_groups)
+    .filter(Boolean)
+    .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+
+  links.forEach(group => {
+    group.customization_options =
+      (group.customization_options || [])
+        .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+  });
+
+  return {
+    ...product,
+    customizations: links
+  };
+});
   menu.innerHTML="";
 
   products.forEach(p=>{
@@ -545,7 +736,7 @@ async function loadProducts(){
       <div class="controls">
         <button onclick="changeQty(${p.id},-1)">−</button>
         <div class="qty" id="q${p.id}">0</div>
-        <button onclick="changeQty(${p.id},1)">＋</button>
+        <button onclick="handleAddProduct(${p.id})">+</button>
       </div>
     `;
 
