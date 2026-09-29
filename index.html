@@ -1006,13 +1006,20 @@ if(!isPickupWithinBusinessHours()){
     return;
   }
 
-  const items=
-    Object.entries(cart).map(
-      ([product_id,quantity])=>({
-        product_id:Number(product_id),
-        quantity:Number(quantity)
-      })
-    );
+  const items =
+  Object.entries(cart).map(([key, quantity]) => {
+    const detail = cartDetails[key];
+
+    const productId =
+      detail?.product_id ??
+      Number(String(key).split("__")[0]);
+
+    return {
+      product_id: Number(productId),
+      quantity: Number(quantity),
+      customizations: detail?.selections || []
+    };
+  });
 
   const btn=
     document.getElementById("orderBtn");
