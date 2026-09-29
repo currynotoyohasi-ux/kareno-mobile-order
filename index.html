@@ -498,7 +498,7 @@ function isPickupWithinBusinessHours(){
     const product = products.find(
       p => Number(p.id) === Number(productId)
     );
-
+function refresh(){
     return sum + (product ? product.price * qty : 0);
   }, 0);
 }
