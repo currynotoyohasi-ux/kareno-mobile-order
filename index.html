@@ -871,7 +871,7 @@ if (customizationError) {
       <div class="controls">
         <button onclick="handleRemoveProduct(${p.id})">−</button>
         <div class="qty" id="q${p.id}">0</div>
-        <button onclick="handleAddProduct(${p.id})">+</button>
+        <button onclick="event.stopPropagation(); handleAddProduct(${p.id})">+</button>
       </div>
     `;
 
