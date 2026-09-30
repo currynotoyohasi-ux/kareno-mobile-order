@@ -1232,7 +1232,78 @@ if (data.length === 1) {
   return;
 }
 
-alert("同じお名前の注文が複数あります。次に一覧表示をつなぎます");
+const result = document.getElementById("result");
+
+const statusText = {
+  new: "注文受付",
+  cooking: "調理中",
+  ready: "受取待ち",
+  done: "お渡し完了"
+};
+
+result.className = "result show";
+
+result.innerHTML = `
+  <h2>該当する注文があります</h2>
+  <p>確認したい注文を選んでください。</p>
+
+  ${data.map(order => {
+    const pickup = order.pickup_time
+      ? new Date(order.pickup_time).toLocaleString("ja-JP", {
+          month: "numeric",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit"
+        })
+      : "-";
+
+    return `
+      <div style="
+        margin:12px 0;
+        padding:16px;
+        border:1px solid #ddd;
+        border-radius:12px;
+        text-align:left;
+      ">
+        <div style="font-size:20px;font-weight:bold;">
+          ${order.order_number}
+        </div>
+
+        <div style="margin-top:6px;">
+          受取予定：${pickup}
+        </div>
+
+        <div style="margin-top:6px;">
+          状況：${statusText[order.status] || order.status}
+        </div>
+
+        <div style="margin-top:6px;">
+          合計：${yen(order.total_amount)}
+        </div>
+
+        <button
+          type="button"
+          style="
+            width:100%;
+            margin-top:12px;
+            padding:12px;
+            border:none;
+            border-radius:10px;
+            background:#f4c430;
+            font-weight:bold;
+          "
+          onclick="renderOrder('${order.order_number}', ${order.total_amount}, '${order.status}'); startStatusWatch('${order.order_number}', ${order.total_amount});"
+        >
+          この注文を見る
+        </button>
+      </div>
+    `;
+  }).join("")}
+`;
+
+result.scrollIntoView({
+  behavior: "smooth"
+});
 };
 loadProducts();
 </script>
