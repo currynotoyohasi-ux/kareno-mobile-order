@@ -362,7 +362,36 @@ header{
 </div>
 </div>
 </section>
+<section class="section">
+  <h2>注文情報を確認</h2>
 
+  <div class="form">
+
+    <div class="field">
+      <label>注文番号</label>
+      <input id="lookupOrderNumber" placeholder="例：C-123">
+    </div>
+
+    <div style="text-align:center;margin:8px 0;color:#777;">
+      または
+    </div>
+
+    <div class="field">
+      <label>氏名・ニックネーム</label>
+      <input id="lookupCustomerName" placeholder="注文時に入力したお名前">
+    </div>
+
+    <button
+      id="lookupOrderBtn"
+      type="button"
+      class="orderbtn"
+      style="width:100%;margin-top:10px;"
+    >
+      注文情報を確認
+    </button>
+
+  </div>
+</section>
 <div id="result" class="result"></div>
 
 </div>
