@@ -1149,8 +1149,56 @@ if(!isPickupWithinBusinessHours()){
 };
 
 loadProducts();
+document.getElementById("lookupOrderBtn").onclick = async () => {
+  const orderNumberInput =
+    document.getElementById("lookupOrderNumber").value.trim();
 
+  const customerName =
+    document.getElementById("lookupCustomerName").value.trim();
 
+  if (!orderNumberInput && !customerName) {
+    alert("注文番号、または氏名・ニックネームを入力してください");
+    return;
+  }
+
+  if (orderNumberInput) {
+    const orderNumber =
+      "C-" + orderNumberInput.replace(/^C-/i, "");
+
+    const { data, error } = await client.rpc(
+      "lookup_order",
+      {
+        p_order_number: orderNumber
+      }
+    );
+
+    if (error) {
+      console.error(error);
+      alert("注文情報を取得できませんでした");
+      return;
+    }
+
+    if (!data) {
+      alert("注文が見つかりませんでした");
+      return;
+    }
+
+    renderOrder(
+      data.order_number,
+      data.total_amount,
+      data.status
+    );
+
+    startStatusWatch(
+      data.order_number,
+      data.total_amount
+    );
+
+    return;
+  }
+
+  alert("次に氏名・ニックネーム検索をつなぎます");
+};
 
 </script>
 </body>
