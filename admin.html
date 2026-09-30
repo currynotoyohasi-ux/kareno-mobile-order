@@ -1497,18 +1497,42 @@ async function loadOrders(){
       grouped[order.id] || [];
 
     const itemHtml =
-      orderItems.map(item => `
-        <div class="item">
-          <span>
-            ${escapeHtml(item.product_name)}
-            × ${item.quantity}
-          </span>
+  orderItems.map(item => {
 
-          <span>
-            ${yen(item.subtotal)}
-          </span>
-        </div>
-      `).join("");
+    const customizationHtml =
+      Array.isArray(item.customizations) && item.customizations.length > 0
+        ? `
+          <div style="
+            margin-top:6px;
+            font-size:14px;
+            color:#555;
+            line-height:1.6;
+          ">
+            ${item.customizations.map(c => `
+              <div>
+                └ ${escapeHtml(c.group_name)}：
+                <b>${escapeHtml(c.option_label)}</b>
+              </div>
+            `).join("")}
+          </div>
+        `
+        : "";
+
+    return `
+      <div class="item">
+        <span>
+          ${escapeHtml(item.product_name)}
+          × ${item.quantity}
+
+          ${customizationHtml}
+        </span>
+
+        <span>
+          ${yen(item.subtotal)}
+        </span>
+      </div>
+    `;
+  }).join("");
 
     const status =
       order.status || "new";
