@@ -555,18 +555,6 @@ function refresh(){
   Object.keys(cart).length===0;
 }
 
-function changeQty(id,delta){
-  cart[id]=(cart[id]||0)+delta;
-
-  if(cart[id]<=0){
-    delete cart[id];
-  }
-
-  document.getElementById("q"+id).textContent=
-  cart[id]||0;
-
-  refresh();
-}
  function escapeHtml(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
