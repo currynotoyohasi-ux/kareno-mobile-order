@@ -1175,40 +1175,7 @@ loadProducts();
 </div>
 
 <script>
-document.getElementById("lookupOrderBtn").onclick = async () => {
-  const orderNumber =
-    document.getElementById("lookupOrderNumber").value.trim();
 
-  if (!orderNumber) {
-    alert("注文番号を入力してください");
-    return;
-  }
-
-  const { data, error } = await client.rpc(
-    "lookup_order",
-    {
-      p_order_number: orderNumber
-    }
-  );
-
-  if (error) {
-    console.error(error);
-    alert("注文情報を取得できませんでした");
-    return;
-  }
-
-  if (!data) {
-    alert("注文が見つかりませんでした");
-    return;
-  }
-
-  renderOrder(
-    data.order_number,
-    data.total_amount,
-    data.status
-  );
-};
-});
 </script>
 </body>
 </html>
