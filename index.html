@@ -1197,7 +1197,42 @@ document.getElementById("lookupOrderBtn").onclick = async () => {
     return;
   }
 
-  alert("次に氏名・ニックネーム検索をつなぎます");
+  const { data, error } = await client.rpc(
+  "lookup_orders_by_name",
+  {
+    p_customer_name: customerName
+  }
+);
+
+if (error) {
+  console.error(error);
+  alert("注文情報を取得できませんでした");
+  return;
+}
+
+if (!data || data.length === 0) {
+  alert("このお名前の注文は見つかりませんでした");
+  return;
+}
+
+if (data.length === 1) {
+  const order = data[0];
+
+  renderOrder(
+    order.order_number,
+    order.total_amount,
+    order.status
+  );
+
+  startStatusWatch(
+    order.order_number,
+    order.total_amount
+  );
+
+  return;
+}
+
+alert("同じお名前の注文が複数あります。次に一覧表示をつなぎます");
 };
 loadProducts();
 </script>
