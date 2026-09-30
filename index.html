@@ -510,7 +510,8 @@ function refresh(){
     Object.keys(cart).length === 0;
 }
   function changeQty(id, delta, selections = []) {
-  const productId = Number(id);
+  alert("changeQty selections = " + JSON.stringify(selections));
+    const productId = Number(id);
   const key = makeCartKey(productId, selections);
 
   cart[key] = (cart[key] || 0) + delta;
