@@ -510,7 +510,7 @@ function refresh(){
     Object.keys(cart).length === 0;
 }
   function changeQty(id, delta, selections = []) {
-  alert("changeQty selections = " + JSON.stringify(selections));
+  
     const productId = Number(id);
   const key = makeCartKey(productId, selections);
 
@@ -1009,7 +1009,7 @@ if(!isPickupWithinBusinessHours()){
       customizations: detail?.selections || []
     };
   });
-alert(JSON.stringify(items, null, 2));
+
   const btn=
     document.getElementById("orderBtn");
 
