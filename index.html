@@ -1280,6 +1280,35 @@ result.innerHTML = `
         <div style="margin-top:6px;">
           合計：${yen(order.total_amount)}
         </div>
+　　　　　<div style="margin-top:10px;">
+  <b>注文内容：</b>
+
+  ${(order.items || []).map(item => {
+    const customizations =
+      Array.isArray(item.customizations)
+        ? item.customizations
+        : [];
+
+    return `
+      <div style="margin-top:6px;">
+        <div>
+          ${escapeHtml(item.product_name)} × ${item.quantity}
+        </div>
+
+        ${customizations.map(c => `
+          <div style="
+            margin-left:14px;
+            font-size:13px;
+            color:#666;
+          ">
+            └ ${escapeHtml(c.group_name)}：
+            ${escapeHtml(c.option_label)}
+          </div>
+        `).join("")}
+      </div>
+    `;
+  }).join("")}
+</div>
 
         <button
           type="button"
