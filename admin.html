@@ -1410,7 +1410,29 @@ async () => {
 
   showAdmin();
 };
+document.getElementById("forgotPasswordBtn").onclick = async () => {
+  const email =
+    document.getElementById("email").value.trim();
 
+  if (!email) {
+    alert("メールアドレスを入力してください");
+    return;
+  }
+
+  const { error } =
+    await client.auth.resetPasswordForEmail(email, {
+      redirectTo:
+        "https://currynotoyohasi-ux.github.io/kareno-mobile-order/reset-password.html"
+    });
+
+  if (error) {
+    console.error(error);
+    alert("再設定メールの送信に失敗しました");
+    return;
+  }
+
+  alert("パスワード再設定メールを送信しました");
+};
 async function logout(){
 
   await client.auth.signOut();
