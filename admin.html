@@ -1066,6 +1066,15 @@ if (productCustomizationLinksError) {
         >
         販売中
       </label>
+      <label style="display:block;margin:12px 0;">
+  <input
+    id="productVisible-${product.id}"
+    type="checkbox"
+    ${product.is_visible !== false ? "checked" : ""}
+    style="width:auto;"
+  >
+  注文画面に表示
+</label>
 　　　　<div style="margin:14px 0;">
   <div style="font-weight:bold;margin-bottom:6px;">
     この商品で使うカスタマイズ
@@ -1167,7 +1176,8 @@ if (productCustomizationLinksError) {
 
   const isAvailable =
     document.getElementById(`productAvailable-${id}`).checked;
-
+const isVisible =
+  document.getElementById(`productVisible-${id}`).checked;
 const sortOrder =
   Number(document.getElementById(`productSort-${id}`).value);
     await shiftSortOrders(sortOrder, id);
@@ -1207,7 +1217,8 @@ const sortOrder =
     name:name,
     price:price,
     is_available:isAvailable,
-  sort_order:sortOrder 
+  is_visible:isVisible,
+    sort_order:sortOrder 
   };
 
   if(imageUrl){
@@ -1338,6 +1349,7 @@ await shiftSortOrders(sortOrder);
         price:price,
         category:"",
         is_available:true,
+        is_visible:true,
         sort_order:sortOrder
       });
 
