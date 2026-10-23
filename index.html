@@ -826,7 +826,7 @@ async function loadProducts(){
   const {data,error}=await client
     .from("products")
     .select("id,name,price,category,is_available,sort_order,image_url")
-  
+  .eq("is_visible", true)
     .order("sort_order",{ascending:true});
 
   if(error){
